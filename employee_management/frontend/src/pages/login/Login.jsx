@@ -1,33 +1,44 @@
 import { useState } from "react";
+import AuthForm from "./../../components/AuthForm";
+import "./../../App.css";
+import "./Login.css";
 
 function Login() {
-   const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const res = await fetch("http://localhost:5000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-    const res = await fetch("http://localhost:5000/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-
-    const data = await res.json();
-    alert(data.message || data.error);
+      const data = await res.json();
+      alert(data.message || data.error);
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
+  const fields = [
+    { label: "Email", name: "email", type: "email", value: form.email, onChange: handleChange },
+    { label: "Password", name: "password", type: "password", value: form.password, onChange: handleChange },
+  ];
+
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input name="email" type="email" placeholder="Email" onChange={handleChange} />
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} />
-        <button type="submit">Login</button>
-      </form>
-    </div>
+    <AuthForm
+      title="Login"
+      className="center"
+      fields={fields}
+      onSubmit={handleSubmit}
+      submitLabel="Login"
+    />
   );
 }
 

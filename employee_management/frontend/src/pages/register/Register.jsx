@@ -1,4 +1,7 @@
 import { useState } from "react";
+import AuthForm from "./../../components/AuthForm";
+import "./Register.css";
+import "./../../App.css";
 
 function Register() {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
@@ -8,27 +11,53 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const res = await fetch("http://localhost:5000/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-    const res = await fetch("http://localhost:5000/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-
-    const data = await res.json();
-    alert(data.message || data.error);
+      const data = await res.json();
+      alert(data.message || data.error);
+    } catch (err) {
+      console.error("Registration error:", err);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
+  const fields = [
+    {
+      label: "Username",
+      name: "username",
+      type: "text",
+      value: form.username,
+      onChange: handleChange,
+    },
+    {
+      label: "Email",
+      name: "email",
+      type: "email",
+      value: form.email,
+      onChange: handleChange,
+    },
+    {
+      label: "Password",
+      name: "password",
+      type: "password",
+      value: form.password,
+      onChange: handleChange,
+    },
+  ];
+
   return (
-    <div>
-      <h2>Create Account</h2>
-      <form onSubmit={handleSubmit}>
-        <input name="username" placeholder="Username" onChange={handleChange} />
-        <input name="email" type="email" placeholder="Email" onChange={handleChange} />
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} />
-        <button type="submit">Register</button>
-      </form>
-    </div>
+    <AuthForm
+      title="Create Account"
+      className="center"
+      fields={fields}
+      onSubmit={handleSubmit}
+      submitLabel="Register"
+    />
   );
 }
 

@@ -6,7 +6,7 @@
 <pre> ``` 
 cd backend
 npm install express pg dotenv cors bcryptjs
-node index.js
+node server.js
 
  ``` </pre>
 
